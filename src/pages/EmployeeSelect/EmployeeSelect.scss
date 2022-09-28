@@ -1,0 +1,24 @@
+.employee-select-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 150px;
+  height: 100vh;
+  justify-content: space-around;
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    p {
+      font-size: 3rem;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+  }
+
+  .infos {
+    display: flex;
+    justify-content: space-around;
+  }
+}
