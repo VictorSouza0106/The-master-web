@@ -1,9 +1,11 @@
+import { ReactElement } from "react";
+
 export interface ITask {
   id: number;
   name: string;
   points: number;
-  type: string;
-  status?: string;
+  type: "bug" | "rework" | "task";
+  status?: "backlog" | "sprint" | "done";
 }
 
 export interface IEmployee {
@@ -16,4 +18,5 @@ export interface IEmployee {
   storyPointsAllocated: number;
 
   tasks: ITask[];
+  avatar?: ReactElement;
 }
