@@ -1,144 +1,16 @@
 import React, { useEffect, useState } from "react";
 import EmployeeList from "../../components/employee/EmployeeList";
 import TaskList from "../../components/task/TaskList";
+import {
+  defaultCycle,
+  gameProgressStore,
+  IScrumCycle,
+  IScrumCycleAttrs,
+} from "../../stores/gameProgressStore";
+import { MOCK_EMPLOYEES } from "../../utils/employeeGenerator";
+import { sprintTaskManagment, MOCK_TASKS } from "../../utils/taskManager";
 import { ITask, IEmployee } from "../interfaces";
 import "./SprintPlanning.scss";
-
-export const MOCK_TASKS: ITask[] = [
-  {
-    id: 1,
-    name: "First Task",
-    points: 16,
-    status: "backlog",
-    type: "task",
-  },
-  {
-    id: 2,
-    name: "Second Task",
-    points: 12,
-    status: "backlog",
-    type: "task",
-  },
-  {
-    id: 3,
-    name: "Third Task",
-    points: 8,
-    status: "backlog",
-    type: "task",
-  },
-  {
-    id: 4,
-    name: "Fourth Task",
-    points: 12,
-    status: "backlog",
-    type: "refactor",
-  },
-  {
-    id: 5,
-    name: "Fifth Task",
-    points: 6,
-    status: "backlog",
-    type: "bug",
-  },
-  {
-    id: 6,
-    name: "Sixth Task",
-    points: 6,
-    status: "backlog",
-    type: "task",
-  },
-  {
-    id: 7,
-    name: "Seventh Task",
-    points: 5,
-    status: "backlog",
-    type: "refactor",
-  },
-  {
-    id: 8,
-    name: "Eighth Task",
-    points: 5,
-    status: "backlog",
-    type: "refactor",
-  },
-  {
-    id: 9,
-    name: "Ninth Task",
-    points: 3,
-    status: "backlog",
-    type: "task",
-  },
-  {
-    id: 10,
-    name: "Tenth Task",
-    points: 12,
-    status: "backlog",
-    type: "bug",
-  },
-];
-
-export const MOCK_EMPLOYEES: IEmployee[] = [
-  {
-    id: 1,
-    salary: 20000,
-    name: "Senior",
-    bugRisk: 0,
-    reworkRisk: 5,
-    storyPointsPerSprint: 25,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 2,
-    salary: 6500,
-    name: "Pleno_1",
-    bugRisk: 5,
-    reworkRisk: 10,
-    storyPointsPerSprint: 20,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 3,
-    salary: 6000,
-    name: "Pleno_2",
-    bugRisk: 5,
-    reworkRisk: 10,
-    storyPointsPerSprint: 18,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 4,
-    salary: 3200,
-    name: "Junior",
-    bugRisk: 10,
-    reworkRisk: 15,
-    storyPointsPerSprint: 10,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 5,
-    salary: 1800,
-    name: "Estag",
-    bugRisk: 15,
-    reworkRisk: 25,
-    storyPointsPerSprint: 5,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 6,
-    salary: 1800,
-    name: "Estag",
-    bugRisk: 15,
-    reworkRisk: 25,
-    storyPointsPerSprint: 5,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-];
 
 const SprintPlanning = () => {
   const [storyPoints, setStoryPoints] = useState(40);
@@ -146,6 +18,13 @@ const SprintPlanning = () => {
 
   const [employees, setEmployees] = useState([] as IEmployee[]);
   const [selectedEmployee, setSelectedEmployee] = useState<IEmployee>();
+
+  const backlogTasks = tasks.filter((task) => task.status === "backlog");
+  const sprintTasks = tasks.filter((task) => task.status === "sprint");
+  const completedTasks = tasks.filter((task) => task.status === "done");
+
+  const gameProgressCycles = gameProgressStore((state) => state.cycles);
+  const addCycle = gameProgressStore((state) => state.addCycle);
 
   useEffect(() => {
     setTasks(MOCK_TASKS);
@@ -180,7 +59,7 @@ const SprintPlanning = () => {
     };
   }
 
-  function updateTask(task: ITask, status: string) {
+  function updateTask(task: ITask, status: "backlog" | "sprint" | "done") {
     let updatedTasks = [...tasks];
     updatedTasks[updatedTasks.findIndex((e) => e.id === task.id)].status =
       status;
@@ -226,17 +105,26 @@ const SprintPlanning = () => {
     });
   }
 
-  const backlogTasks = tasks.filter((task) => task.status === "backlog");
-  const sprintTasks = tasks.filter((task) => task.status === "sprint");
-  const completedTasks = tasks.filter((task) => task.status === "done");
-
   function nextSprint() {
-    let updatedTasks = [...tasks];
-    updatedTasks.forEach((task) => {
-      if (task.status === "sprint") task.status = "done";
+    let updatedTasks = tasks.filter(
+      (task) => task.status === "backlog" || task.status === "done"
+    );
+
+    const { sprintStatus, taskErrorList } = sprintTaskManagment(employees);
+    addCycle(sprintStatus);
+    console.log(gameProgressCycles);
+
+    updatedTasks = [...updatedTasks, ...taskErrorList];
+
+    employees.forEach((emp: IEmployee) => {
+      emp.tasks = [];
+      emp.storyPointsAllocated = 0;
     });
 
+    const updatedEmployees = [...employees];
+
     setTasks(updatedTasks);
+    setEmployees(updatedEmployees);
     setStoryPoints(10);
   }
 
@@ -249,7 +137,13 @@ const SprintPlanning = () => {
   return (
     <div className="container">
       <section>
-        <div>points Remain {storyPoints}</div>
+        <div>
+          Total Bugs Created -
+          {gameProgressCycles.reduce(
+            (previousValue, currentValue) => currentValue.totalBugs,
+            0
+          )}
+        </div>
         <div>
           Tasks {!selectedEmployee && "Funcionario Não Selecionado"}
           {selectedEmployee && selectedEmployee.name}
