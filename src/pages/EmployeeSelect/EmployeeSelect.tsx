@@ -1,47 +1,26 @@
 import EmployeeList from "../../components/employee/EmployeeList";
 import { IEmployeeItemStyles } from "../../components/employee/interfaces";
+import { employeeGenerator } from "../../utils/employeeGenerator";
+import { getResponsiveAttr, IResponsiveAttr } from "../../window.service";
 import { IEmployee } from "../interfaces";
 import "./EmployeeSelect.scss";
 
-export const MOCK_EMPLOYEES: IEmployee[] = [
-  {
-    id: 1,
-    salary: 20000,
-    name: "Senior",
-    bugRisk: 0,
-    reworkRisk: 5,
-    storyPointsPerSprint: 25,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 2,
-    salary: 6500,
-    name: "Pleno_1",
-    bugRisk: 5,
-    reworkRisk: 10,
-    storyPointsPerSprint: 20,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-  {
-    id: 3,
-    salary: 6000,
-    name: "Pleno_2",
-    bugRisk: 5,
-    reworkRisk: 10,
-    storyPointsPerSprint: 18,
-    storyPointsAllocated: 0,
-    tasks: [],
-  },
-];
+// Responsive
+
+const respCardScale: IResponsiveAttr = {
+  mobile: 1,
+  small: 1,
+  medium: 1.4,
+  large: 1.6,
+};
 
 const EmployeeSelect = () => {
   const employeeStyle: IEmployeeItemStyles = {
-    cardScale: 1.2,
+    cardScale: getResponsiveAttr(respCardScale),
     showStoryPointsRemain: false,
   };
 
+  const employees = employeeGenerator(3, "intern");
   return (
     <section className="employee-select-container">
       <div className="title">
@@ -50,7 +29,7 @@ const EmployeeSelect = () => {
       <div>
         <EmployeeList
           onEmployeeSelected={() => {}}
-          employees={MOCK_EMPLOYEES}
+          employees={employees}
           customStyle={employeeStyle}
         ></EmployeeList>
       </div>

@@ -34,14 +34,16 @@ const EmployeeCard = ({
         </div>
       )}
 
-      <div>
-        <img
-          src="https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
-          alt="placeholder"
-        />
+      <div style={{ width: "225px" }}>
+        {employee.avatar ?? (
+          <img
+            src="https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
+            alt="placeholder"
+          />
+        )}
       </div>
       <div className="employee-info">
-        <p>s{showName ?? employee.name}</p>
+        <p>{showName ?? employee.name}</p>
         {showSalary ?? <p>R${employee.salary}</p>}
       </div>
       <div className="employee-status">
