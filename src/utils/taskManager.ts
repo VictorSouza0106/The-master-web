@@ -4,18 +4,19 @@ import {
   gameProgressStore,
   IScrumCycle,
 } from "../stores/gameProgressStore";
-const BUG_TASK_MULT = 3;
+const BUG_TASK_MULT = 2;
 const REWORK_TASK_MULT = 1;
 
 //TODO cahnge var name -> Calcs all sprint Tasks
 export const sprintTaskManagment = (employees: IEmployee[]) => {
   let taskErrorList: ITask[] = [];
-  let sprintCycle: IScrumCycle = defaultCycle;
+  let sprintCycle: IScrumCycle = { ...defaultCycle };
 
   employees.forEach((emp: IEmployee) => {
     sprintCycle.budgetSpend += emp.salary as number;
 
-    if (emp.tasks.length < 0) return;
+    if (emp.tasks.length === 0) return;
+    console.log("Has Tasks");
 
     sprintCycle.employeesWorks++;
 
@@ -29,6 +30,7 @@ export const sprintTaskManagment = (employees: IEmployee[]) => {
       sprintCycle.totalTasks++;
       sprintCycle.totalBugs += totalBugs;
       sprintCycle.totalReworks += totalReworks;
+      sprintCycle.totalStoryPts += task.points;
       taskErrorList.push(...errorTasks);
     });
   });

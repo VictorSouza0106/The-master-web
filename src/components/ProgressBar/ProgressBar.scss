@@ -1,0 +1,23 @@
+.bar-holder {
+  background-color: #e7e7e7;
+  border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  -ms-border-radius: 20px;
+  -o-border-radius: 20px;
+  margin: 0 auto;
+  width: 100%;
+  .bar {
+    width: 100%;
+    color: #fff;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 400;
+    background-image: linear-gradient(100deg, rgb(38, 0, 255), red, yellow);
+  }
+}

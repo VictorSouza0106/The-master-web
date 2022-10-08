@@ -12,6 +12,7 @@ export interface IScrumCycle {
   totalReworks: number;
   employeesWorks: number;
   budgetSpend: number;
+  sprintName: string;
 }
 
 export type IScrumCycleAttrs =
@@ -29,13 +30,11 @@ export const defaultCycle: IScrumCycle = {
   totalReworks: 0,
   totalStoryPts: 0,
   totalTasks: 0,
+  sprintName: "",
 };
 
 export const gameProgressStore = create<IGameStore>((set) => ({
   cycles: [],
-  a: () => {
-    console.log("Teste Store");
-  },
   addCycle: (cycle: IScrumCycle) => {
     set((state) => ({
       cycles: [...state.cycles, cycle],
